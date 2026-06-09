@@ -205,7 +205,7 @@ sudo usermod -aG sudo,video,plugdev,render devuser
 | IP 없음 | LAN 연결, `ip link`, 공유기 DHCP 목록 확인 |
 | CMA 미적용 | 부팅 설정 파일 경로 재확인, `sudo reboot` |
 
-로그인 루프·백업 등 **기존 장비 복구**는 [OrangePI_LightDM_XFCE_무한잠금화면_해결방법.md](../OrangePI_LightDM_XFCE_무한잠금화면_해결방법.md), [OrangePI_전체시스템_백업_복구_방법.md](../OrangePI_전체시스템_백업_복구_방법.md) 참조.
+백업 등 **기존 장비 복구**는  [OrangePI_전체시스템_백업_복구_방법.md](../OrangePI_전체시스템_백업_복구_방법.md) 참조.
 
 ## 11. 완료 확인
 

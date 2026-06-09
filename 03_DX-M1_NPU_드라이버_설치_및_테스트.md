@@ -177,7 +177,6 @@ cd ~/dx-all-suite/dx-runtime/dx_stream
 ./run_demo.sh
 ```
 
-RTSP/WebRTC 연동: [RK3588_DeepX_M1_run_demo_9번_WebRTC_연동작업.md](../RK3588_DeepX_M1_run_demo_9번_WebRTC_연동작업.md)
 
 ## 13. 트러블슈팅
 
@@ -230,4 +229,4 @@ ldd ./bin/* 2>/dev/null | grep "not found"
 | 설치 가이드 | https://github.com/DEEPX-AI/dx-all-suite/blob/main/docs/source/02_Setting_Up_Environment.md |
 | DEEPX Developer Portal | https://developer.deepx.ai |
 
-**기존 장비 이전**(`orangepi`→`camera`, 경로 캐시 등)은 [OrangePI_계정생성_파일권한복사_방법.md](../OrangePI_계정생성_파일권한복사_방법.md), [docs/PROJECT_BASELINE.md](../docs/PROJECT_BASELINE.md) 참조 — **신규 클린 설치에는 해당 없음**.
+
