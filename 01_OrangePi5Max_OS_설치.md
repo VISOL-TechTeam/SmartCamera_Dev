@@ -33,7 +33,7 @@
 
 | 항목 | 이 단계 시작 시 |
 |---|---|
-| microSD | **포맷되지 않았거나 비어 있음** |
+| emmc/microSD | **포맷되지 않았거나 비어 있음** |
 | Orange Pi | OS 없음, 전원 OFF |
 | 네트워크/SSH/DX-M1 | **아직 해당 없음** |
 
@@ -42,10 +42,10 @@
 | 항목 | 설명 |
 |---|---|
 | Orange Pi 5 Max | 5V/4A 이상 전원 |
-| microSD | 32GB 이상, **데이터 백업 후 사용** (굽기 시 전체 삭제됨) |
-| USB SD 카드 리더 | Windows PC |
+| emmc/microSD | 32GB 이상, **데이터 백업 후 사용** (굽기 시 전체 삭제됨) |
+| USB SD 카드 리더 + emmc to sd(emmc 사용시) | Windows PC |
 | HDMI + USB 키보드 | Desktop: 설정 마법사 / Server: 콘솔 로그인 |
-| LAN 케이블 | DHCP로 IP 받기 |
+| LAN 케이블/wifi ant | DHCP로 IP 받기 |
 
 ## 4. OS 이미지 다운로드
 
@@ -54,7 +54,7 @@ Orange Pi 5 Max / RK3588용 이미지:
 | 항목 | 내용 |
 |---|---|
 | **릴리스** | [Ubuntu Rockchip v2.4.0](https://github.com/Joshua-Riek/ubuntu-rockchip/releases/tag/v2.4.0) |
-| 저장소 | https://joshua-riek.github.io/ubuntu-rockchip-download/ |
+| 저장소 | [Download]https://joshua-riek.github.io/ubuntu-rockchip-download/ |
 |권장 버전| ubuntu 24.04|
 |권장 옵션| Desktop-arm64|
 | 보드 | 릴리스 페이지에서 **Orange Pi 5 Max** 항목 선택 |
