@@ -88,9 +88,9 @@
 | 항목 | 필요 시점 | 설명 |
 |---|---|---|
 | Orange Pi 5 Max | 01~ | RK3588, 5V/4A 전원 |
-| microSD 32GB+ | 01 | **빈** 카드, USB 리더 |
+| emmc/microSD 32GB+ | 01 | **빈** 카드, USB 리더 |
 | HDMI·키보드·(마우스) | 01 | Desktop 마법사 / Server 콘솔 |
-| LAN 케이블 | 01~ | 유선 DHCP 권장 |
+| LAN 케이블/Wifi ant | 01~ | DHCP 권장 |
 | DeepX M1 M.2 | **03 시작 전** 장착 | 전원 OFF 후 삽입 |
 | USB UVC 카메라 | 04 | MJPEG 권장 |
 
@@ -101,17 +101,6 @@
 | balenaEtcher | 01 | https://etcher.balena.io/ |
 | OpenSSH Client | 02 | Windows 10/11 기본 |
 | VS Code + Remote-SSH | 02 (선택) | https://code.visualstudio.com/ |
-
-### 6.3 공식 링크
-
-| 분류 | URL |
-|---|---|
-| OS v2.4.0 | https://github.com/Joshua-Riek/ubuntu-rockchip/releases/tag/v2.4.0 |
-| Etcher | https://etcher.balena.io/ |
-| dx-all-suite | https://github.com/DEEPX-AI/dx-all-suite |
-| SmartCamera App | https://github.com/VISOL-TechTeam/SmartCamera_App |
-| DX 환경 설정 | https://github.com/DEEPX-AI/dx-all-suite/blob/main/docs/source/02_Setting_Up_Environment.md |
-| DX 첫 추론 | https://github.com/DEEPX-AI/dx-all-suite/blob/main/docs/source/03_Running_Your_First_NPU_Model.md |
 
 ---
 
