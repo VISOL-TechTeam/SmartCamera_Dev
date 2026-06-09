@@ -1,5 +1,34 @@
 # 03. DX-M1(NPU) 드라이버 설치 및 테스트
 
+## 문서 안내
+
+| 항목 | 내용 |
+|---|---|
+| **커리큘럼** | **3 / 4** — DeepX M1 NPU |
+| **선행** | [01](01_OrangePi5Max_OS_설치.md) + [02](02_SSH_연결_및_설정.md) (SSH 권장) |
+| **작업 위치** | Orange Pi (**03 §4**만 전원 OFF·M.2 장착) |
+| **완료 기준** | `dxrt-cli -s` M1, `dx_app/run_demo.sh` |
+| **다음** | [04_USB_UVC_카메라_테스트.md](04_USB_UVC_카메라_테스트.md) |
+
+| 이 문서에서 함 | 이 문서에서 하지 않음 |
+|---|---|
+| M.2 장착, DKMS·headers, dx-all-suite, dxrt, dx_app, (선택) dx_stream | UVC ffmpeg 상세, WebRTC·nori 서버 |
+
+### 작업 흐름
+
+```text
+[§4] 전원 OFF → M.2 장착 → PCIe 확인
+    → [§6] dkms + linux-headers (rockchip) — install.sh 전 필수
+    → [§7] git clone --recurse-submodules
+    → [§8] ./dx-runtime/install.sh → reboot
+    → [§10] dxrt-cli -s → [§11] dx_app 데모
+    → [선택 §12] dx_stream (install→build→setup→run_demo)
+```
+
+> **주의:** `linux-headers-generic`(6.8) 설치 금지. **§6.4·§13.2** 참고.
+
+---
+
 ## 1. 목적
 
 **DXRT·드라이버가 없는 깨끗한 OS**에 DeepX M1 NPU를 장착하고, [dx-all-suite](https://github.com/DEEPX-AI/dx-all-suite)를 **처음부터 클론·설치**한 뒤 첫 추론 데모까지 실행한다.
@@ -22,6 +51,10 @@
 - DeepX M1 M.2 모듈, 나사·간격대(포함 시) 준비
 - 인터넷 연결 (git clone, 설치 스크립트 다운로드)
 
+---
+
+## A. 하드웨어
+
 ## 4. DeepX M1 하드웨어 장착
 
 1. Orange Pi **전원 OFF**, USB·HDMI 분리
@@ -36,6 +69,10 @@ dmesg | tail -50
 ```
 
 아무것도 안 보이면 전원 OFF 후 재장착.
+
+---
+
+## B. 개요·설치 전 준비 (DKMS·headers)
 
 ## 5. 구성 요소
 
@@ -148,6 +185,10 @@ Rockchip 커널·headers를 **업그레이드할 때**는 hold를 해제한다.
 sudo apt-mark unhold linux-headers-6.8.0-124 linux-headers-6.8.0-124-generic linux-headers-generic
 ```
 
+---
+
+## C. dx-all-suite 설치
+
 ## 7. dx-all-suite 클론
 
 홈 디렉터리에서 **서브모듈 포함** 클론 (빈 폴더에서 시작):
@@ -210,6 +251,10 @@ runtime·앱만 설치:
 설치 중 오류 시: [FAQ Troubleshooting](https://github.com/DEEPX-AI/dx-all-suite/blob/main/docs/source/05_FAQ_Troubleshooting_Guide.md) · **13절**
 
 설치 스크립트가 `venv-dx-runtime` 등을 자동 구성한다. **수동 venv 생성은 필요 없다.**
+
+---
+
+## D. 재부팅 · 검증 · 데모
 
 ## 9. 재부팅 (필수)
 
@@ -299,33 +344,196 @@ cd ~/dx-all-suite
 
 `.dxnn` 모델이 없으면 compiler 단계(Step 0~4)를 먼저 수행해야 한다.
 
+---
+
+## E. dx_stream (심화, 선택 — 04번과 별개)
+
 ## 12. dx_stream (심화, 선택)
 
 카메라·영상 파이프라인은 **03번 8절(dx-runtime)·10절(M1 확인)** 및 **04번 UVC** 완료 후 진행한다.
 
+**한 번에 실행하지 않는다.** 아래 **1→2→3→4** 순서대로 **단계마다 완료 확인 후** 다음으로 넘어간다.
+
+작업 디렉터리:
+
 ```bash
 cd ~/dx-all-suite/dx-runtime/dx_stream
+```
+
+### 12.1 설치 — `./install.sh`
+
+의존성 패키지·Python venv 등 **설치**만 수행한다.
+
+```bash
 ./install.sh
+```
+
+완료 후 오류 없이 끝났는지 확인하고 **12.2**로 진행한다.
+
+### 12.2 빌드 — `./build.sh`
+
+소스 **빌드**만 수행한다. `install.sh` 직후 **반드시** 실행한다.
+
+```bash
+./build.sh
+```
+
+빌드 로그에 `error`가 없는지 확인하고 **12.3**으로 진행한다.
+
+### 12.3 다운로드 — `./setup.sh`
+
+NPU 모델(`.dxnn`)·샘플 영상 등 **에셋 다운로드**만 수행한다. 빌드 완료 후 실행한다.
+
+```bash
 ./setup.sh
+```
+
+네트워크·디스크 여유 필요. 다운로드 완료 후 **12.4**로 진행한다.
+
+### 12.4 실행 — `./run_demo.sh`
+
+위 1~3단계가 모두 끝난 뒤 **데모 실행**한다.
+
+```bash
 ./run_demo.sh
 ```
 
-| 순서 | 스크립트 | 설명 |
+터미널에 표시되는 번호를 입력해 AI 데모를 선택한다.
+
+| 순서 | 스크립트 | 역할 |
 |---|---|---|
-| 1 | `./install.sh` | dx_stream **의존성 설치·로컬 환경 구성** (`run_demo.sh` **전 필수**) |
-| 2 | `./setup.sh` | NPU 모델·샘플 영상 등 에셋 다운로드 |
-| 3 | `./run_demo.sh` | 대화형 AI 데모 선택·실행 |
+| **1** | `./install.sh` | 의존성 **설치** |
+| **2** | `./build.sh` | 소스 **빌드** |
+| **3** | `./setup.sh` | 모델·영상 **다운로드** |
+| **4** | `./run_demo.sh` | 데모 **실행** |
 
-`./install.sh` 없이 `./run_demo.sh`만 실행하면 의존성·빌드 미완료로 실패할 수 있다.
+`install.sh`·`build.sh`·`setup.sh` 없이 `./run_demo.sh`만 실행하면 실패할 수 있다.
 
-03번 **8.1**에서 `./dx-runtime/install.sh --all`(또는 `--target=dx_stream`)을 이미 실행했다면, `dx_stream` 디렉터리 `./install.sh`는 **run_demo 직전**에 한 번 더 실행해 로컬 패키지·venv를 맞춘다.
+03번 **8.1** `./dx-runtime/install.sh --all`은 **NPU 드라이버·DXRT**용이다. dx_stream은 **12.1~12.4**를 `dx_stream` 디렉터리에서 **별도로** 진행한다.
 
-설치·빌드 오류 시:
+설치·빌드·다운로드 오류 시 해당 단계만 다시 실행:
 
 ```bash
 cd ~/dx-all-suite/dx-runtime/dx_stream
 ./install.sh
+./build.sh
 ./setup.sh
+```
+
+### 12.5 전체 화면·표시 sink 설정 (HDMI Desktop)
+
+데모 영상이 **작게** 보이거나 Wayland/X11에서 **표시가 안 될 때**, `run_demo.sh`와 `pipelines` 아래 데모 스크립트를 아래처럼 맞춘다.
+
+#### 12.5.1 `run_demo.sh` — 디스플레이 환경·sink 기본값
+
+파일: `~/dx-all-suite/dx-runtime/dx_stream/run_demo.sh`
+
+`gst-inspect` 확인 **앞**에 디스플레이·sink 환경을 설정한다.
+
+```bash
+if [ -z "${XDG_RUNTIME_DIR:-}" ] && [ -S "/run/user/$(id -u)/wayland-0" ]; then
+    export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+fi
+
+if [ -z "${WAYLAND_DISPLAY:-}" ] && [ -n "${XDG_RUNTIME_DIR:-}" ] && [ -S "$XDG_RUNTIME_DIR/wayland-0" ]; then
+    export WAYLAND_DISPLAY="wayland-0"
+fi
+
+if [ -z "${DISPLAY:-}" ] && [ -S /tmp/.X11-unix/X0 ]; then
+    export DISPLAY=":0"
+fi
+
+if [ -z "${DXSTREAM_VIDEO_SINK_ARGS:-}" ] && [ -n "${WAYLAND_DISPLAY:-}" ]; then
+    export DXSTREAM_VIDEO_SINK_ARGS="video-sink=waylandsink"
+fi
+```
+
+| 변수 | 용도 |
+|---|---|
+| `XDG_RUNTIME_DIR` / `WAYLAND_DISPLAY` | Wayland 세션 (Ubuntu Desktop) |
+| `DISPLAY` | X11 (`:0`) |
+| `DXSTREAM_VIDEO_SINK_ARGS` | 각 데모 파이프라인에 넘길 GStreamer sink 인자 |
+
+**12.4** 실행 전 sink를 바꿀 때 (예: Wayland 전체 화면에 가깝게):
+
+```bash
+export DXSTREAM_VIDEO_SINK_ARGS="video-sink=waylandsink"
+./run_demo.sh
+```
+
+X11:
+
+```bash
+export DXSTREAM_VIDEO_SINK_ARGS="video-sink=ximagesink"
+export DISPLAY=:0
+./run_demo.sh
+```
+
+RTSP 내부 테스트(9번):
+
+```bash
+./run_demo.sh --internal-rtsp
+```
+
+#### 12.5.2 `pipelines` 데모 스크립트 — `VIDEO_SINK_ARGS` 연동
+
+경로: `~/dx-all-suite/dx-runtime/dx_stream/dx_stream/pipelines/`
+
+각 `run_*.sh`에 아래 블록이 있다. **else**를 `run_demo.sh`의 `DXSTREAM_VIDEO_SINK_ARGS`를 쓰도록 바꾼다.
+
+**변경 전**
+
+```bash
+if [ "$(lsb_release -rs)" = "18.04" ]; then
+    echo -e "Using X11 video sink forcely on ubuntu 18.04"
+    VIDEO_SINK_ARGS="video-sink=ximagesink"
+else
+    VIDEO_SINK_ARGS=""
+fi
+```
+
+**변경 후**
+
+```bash
+if [ "$(lsb_release -rs)" = "18.04" ]; then
+    echo -e "Using X11 video sink forcely on ubuntu 18.04"
+    VIDEO_SINK_ARGS="video-sink=ximagesink"
+else
+    VIDEO_SINK_ARGS="${DXSTREAM_VIDEO_SINK_ARGS:-}"
+fi
+```
+
+`run_demo.sh`에서 설정·export한 `DXSTREAM_VIDEO_SINK_ARGS`가 `fpsdisplaysink`에 전달된다.
+
+**일괄 확인** (수정 대상 파일 찾기):
+
+```bash
+cd ~/dx-all-suite/dx-runtime/dx_stream/dx_stream/pipelines
+grep -rl 'VIDEO_SINK_ARGS=""' .
+```
+
+찾은 각 `run_*.sh`에 위 **변경 후** 패턴을 적용한다.
+
+#### 12.5.3 멀티 채널(8·9번) — 타일 크기
+
+8·9번은 그리드 분할 때문에 칸이 작다. 추가로 아래 파일 **상단** 해상도를 키운다.
+
+| 데모 | 파일 |
+|---|---|
+| 8 | `pipelines/multi_stream/run_multi_stream.sh` |
+| 9 | `pipelines/rtsp/run_RTSP.sh` |
+
+```bash
+OUTPUT_WIDTH=1920
+OUTPUT_HEIGHT=1080
+```
+
+#### 12.5.4 단일 채널(0~7번) — 표시 해상도 확대 (선택)
+
+`run_yolo26n.sh` 등 `fpsdisplaysink` 직전에 `videoscale` 추가:
+
+```bash
+$VIDEOCONVERT_PIPELINE ! videoscale ! video/x-raw,width=1280,height=720 ! fpsdisplaysink sync=false $VIDEO_SINK_ARGS
 ```
 
 
@@ -476,7 +684,7 @@ ldd ./bin/* 2>/dev/null | grep "not found"
 - [ ] `sudo dkms status` — `dxrt-driver-dkms`가 **현재 커널**에 `installed`
 - [ ] `dxrt-cli -s`에서 Device 0: M1
 - [ ] `dx_app/setup.sh` + `run_demo.sh` 실행
-- [ ] (선택) `dx_stream`: `./install.sh` → `./setup.sh` → `./run_demo.sh`
+- [ ] (선택) `dx_stream`: `./install.sh` → `./build.sh` → `./setup.sh` → `./run_demo.sh` (12절, 단계별)
 
 ## 15. 다음 단계
 

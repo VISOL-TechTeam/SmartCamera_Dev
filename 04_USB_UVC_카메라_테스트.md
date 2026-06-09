@@ -1,5 +1,32 @@
 # 04. USB UVC 카메라 테스트
 
+## 문서 안내
+
+| 항목 | 내용 |
+|---|---|
+| **커리큘럼** | **4 / 4** — USB UVC 카메라 |
+| **선행** | [01](01_OrangePi5Max_OS_설치.md) **CMA 256M**, [02](02_SSH_연결_및_설정.md) (원격 시) |
+| **작업 위치** | Orange Pi (SSH 또는 HDMI) |
+| **완료 기준** | `/dev/video*` 인식, **`test.jpg`** 1장 캡처 |
+| **다음** | [00_INDEX.md](00_INDEX.md) §10 최종 점검 · (심화) §14 |
+
+| 이 문서에서 함 | 이 문서에서 하지 않음 |
+|---|---|
+| v4l2·ffmpeg **단독** 카메라 검증, CMA 재확인 | NPU 설치, nori_camera_server, dx_stream 실카메라 |
+
+### 작업 흐름
+
+```text
+[§4~5] 도구 설치·CMA 확인
+    → [§6] USB 연결·lsusb
+    → [§7] v4l2-ctl 포맷 확인
+    → [§8] ffmpeg 1프레임 → test.jpg
+```
+
+> **원칙:** 앱(nori, dx_stream 실카메라) 실행 **전에** 이 문서로 카메라만 먼저 검증한다.
+
+---
+
 ## 1. 목적
 
 **카메라 테스트 도구가 없는 깨끗한 OS**에 USB UVC 카메라를 연결하고, 패키지 설치부터 장치 인식·단일 프레임 캡처까지 **처음부터** 검증한다.
@@ -13,13 +40,17 @@
 | `/dev/video*` | 카메라 없으면 **없음** |
 | CMA | 01번에서 `cma=256M` **적용 완료** 전제 |
 
-애플리케이션(`nori_camera_server`, `dx_stream` 등)은 **아직 실행하지 않은** 상태에서 카메라만 검증한다.
+애플리케이션(`nori_camera_server`, `dx_stream` 실카메라 등)은 **아직 실행하지 않은** 상태에서 카메라만 검증한다.
 
 ## 3. 사전 조건
 
 - [01_OrangePi5Max_OS_설치.md](01_OrangePi5Max_OS_설치.md) — 특히 **CMA 256M**
 - [02_SSH_연결_및_설정.md](02_SSH_연결_및_설정.md) — 원격 테스트 시
 - USB UVC 카메라 (MJPEG 640x480 지원 권장)
+
+---
+
+## A. 준비
 
 ## 4. 테스트 도구 설치
 
@@ -57,6 +88,10 @@ cat /proc/cmdline
 |---|---|
 | ~8192 kB | [01번 8절](01_OrangePi5Max_OS_설치.md) `cma=256M` 적용 후 reboot |
 | ~262144 kB | 다음 단계 |
+
+---
+
+## B. 장치 인식 · 캡처
 
 ## 6. USB 카메라 연결
 
@@ -119,6 +154,10 @@ ffmpeg -f v4l2 -video_size 640x480 -framerate 15 \
   -i /dev/video0 -frames:v 1 test_yuyv.jpg
 ```
 
+---
+
+## C. 보조 확인 (선택)
+
 ## 9. 점유 프로세스 확인
 
 캡처 실패·hang 시:
@@ -148,14 +187,13 @@ gst-inspect-1.0 | grep -Ei "v4l2src|mpph264enc|rtspclientsink"
 | `mpph264enc` | RK3588 H.264 HW 인코더 |
 | `rtspclientsink` | RTSP publish |
 
-## 11. 권장 테스트 순서 (클린 환경)
+## 11. 권장 테스트 순서 (요약)
 
-1. CMA 256M 확인
-2. `apt install v4l-utils ffmpeg`
-3. USB 카메라 연결 → `lsusb`
-4. `v4l2-ctl --list-devices` / `--list-formats-ext`
-5. `ffmpeg ... -frames:v 1 test.jpg`
-6. (선택) GStreamer `v4l2src` + `fakesink` (headless)
+1. CMA 256M 확인 (§5)
+2. `apt install v4l-utils ffmpeg` (§4)
+3. USB 연결 → `lsusb` (§6)
+4. `v4l2-ctl --list-devices` (§7)
+5. `ffmpeg ... test.jpg` (§8)
 
 ## 12. 트러블슈팅
 
@@ -174,23 +212,25 @@ dmesg | grep -iE "uvc|usb|video" | tail -50
 journalctl -b -p warning..alert --no-pager | tail -50
 ```
 
-## 13. 다음 단계 (심화, 선택)
+## 13. 완료 확인
+
+- [ ] `v4l-utils`, `ffmpeg` 설치
+- [ ] USB 연결 후 `v4l2-ctl --list-devices`에 카메라 표시
+- [ ] `ffmpeg`로 `test.jpg` 1장 생성
+- [ ] (선택) Windows `scp`로 이미지 수신
+
+---
+
+## 14. 다음 단계 (심화 · 커리큘럼 이후)
 
 카메라 단독 테스트 통과 후:
 
 | 주제 | 문서 |
 |---|---|
-| dx_stream + 카메라 | `~/dx-all-suite/dx-runtime/dx_stream` — `./install.sh` → `./setup.sh` → `./run_demo.sh` |
+| dx_stream (샘플 영상) | [03 §12](03_DX-M1_NPU_드라이버_설치_및_테스트.md) |
 | nori_camera_server | [nori_camera_server_setup_guide.md](../nori_camera_server_setup_guide.md) |
-| 전체 파이프라인 설계 | [RK3588_DeepX_M1_스마트카메라_데이터파이프라인.md](../RK3588_DeepX_M1_스마트카메라_데이터파이프라인.md) |
-
-## 14. 완료 확인
-
-- [ ] `v4l-utils`, `ffmpeg` **새로 설치**
-- [ ] USB 연결 후 `v4l2-ctl --list-devices`에 카메라 표시
-- [ ] `ffmpeg`로 `test.jpg` 1장 생성
-- [ ] (선택) Windows `scp`로 이미지 수신
+| 전체 파이프라인 | [RK3588_DeepX_M1_스마트카메라_데이터파이프라인.md](../RK3588_DeepX_M1_스마트카메라_데이터파이프라인.md) |
 
 ## 15. 교육 커리큘럼 완료
 
-[00_INDEX.md](00_INDEX.md) 11절 복습 체크리스트로 최종 점검.
+→ [00_INDEX.md](00_INDEX.md) **§10 최종 점검** 체크리스트로 전체 확인.

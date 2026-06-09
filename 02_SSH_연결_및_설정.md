@@ -1,5 +1,32 @@
 # 02. SSH 연결 및 설정
 
+## 문서 안내
+
+| 항목 | 내용 |
+|---|---|
+| **커리큘럼** | **2 / 4** — SSH 원격 접속 |
+| **선행** | [01_OrangePi5Max_OS_설치.md](01_OrangePi5Max_OS_설치.md) 완료 (Pi 부팅·LAN) |
+| **작업 위치** | **Windows PC**(PowerShell·VS Code) + **Orange Pi**(SSH·HDMI) |
+| **완료 기준** | Windows 키 생성 → Pi `openssh-server` → **키 접속** |
+| **다음** | [03_DX-M1_NPU_드라이버_설치_및_테스트.md](03_DX-M1_NPU_드라이버_설치_및_테스트.md) |
+
+| 이 문서에서 함 | 이 문서에서 하지 않음 |
+|---|---|
+| OpenSSH·키·IP·ssh 서버·authorized_keys·VS Code·SCP | OS 굽기, dx-all-suite, NPU, 카메라 |
+
+### 작업 흐름 (순서 필수)
+
+```text
+[Windows §4~5] OpenSSH Client → ssh-keygen
+    → [Pi §6] IP 확인 (hostname -I)
+    → [Windows §7] ssh 비밀번호 1회
+    → [Pi §8] openssh-server
+    → [Windows §9~10] 공개키 등록·키 접속
+    → [선택 §11~14] VS Code·SCP·보안
+```
+
+---
+
 ## 1. 목적
 
 01번에서 부팅한 Orange Pi에 **IP 주소로 원격 접속**할 수 있게 한다. **Windows PowerShell OpenSSH 설치·키 생성을 먼저** 한 뒤, IP 확인·Orange Pi SSH 서버 설치·키 등록·VS Code Remote-SSH·SCP까지 구성한다.
@@ -22,9 +49,15 @@
 
 ## 3. 사전 조건
 
-- [01_OrangePi5Max_OS_설치.md](01_OrangePi5Max_OS_설치.md) 완료 (Orange Pi 부팅·LAN 연결)
-- Orange Pi와 Windows PC가 **같은 LAN**
-- 작업 계정: `<USER>` (Server: `ubuntu` / Desktop: 마법사에서 생성한 이름)
+- [01](01_OrangePi5Max_OS_설치.md) 완료
+- Orange Pi와 Windows PC **같은 LAN**
+- `<USER>`: Server `ubuntu` / Desktop 마법사 사용자명
+
+저장소 `ssh_keys/`는 **다른 PC용 예시**이며, 이 교육에서는 Windows에서 **새 키를 생성**한다.
+
+---
+
+## A. Windows 준비 (Pi IP 몰라도 됨)
 
 ## 4. Windows — OpenSSH Client 설치
 
@@ -84,6 +117,10 @@ Get-Content "$env:USERPROFILE\.ssh\id_ed25519_orangepi.pub"
 ```
 
 `.pub` 한 줄 **맨 끝**에 `ubuntu@orangepi5max` 같은 주석이 붙어 있으면 정상이다.
+
+---
+
+## B. Orange Pi IP · 첫 접속
 
 ## 6. Orange Pi IP 주소 확인
 
@@ -151,6 +188,10 @@ exit
 
 SSH 서버가 없거나 꺼져 있다. **8절**로 HDMI 또는 원격으로 `openssh-server`를 설치한다.
 
+---
+
+## C. Orange Pi SSH 서버 · 키 등록
+
 ## 8. Orange Pi — SSH 서버 설치
 
 ### 8.1 경로 A: IP 접속이 이미 되는 경우 (Server 이미지 등)
@@ -217,6 +258,10 @@ ssh -i "$env:USERPROFILE\.ssh\id_ed25519_orangepi" <USER>@<ORANGE_PI_IP>
 ```
 
 비밀번호 없이 접속되면 성공.
+
+---
+
+## D. 편의 기능 (선택)
 
 ## 11. Windows SSH config (선택)
 

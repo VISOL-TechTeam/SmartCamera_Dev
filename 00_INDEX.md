@@ -1,125 +1,202 @@
 # Orange Pi 5 Max 교육자료 통합 인덱스
 
-## 1. 교육 목표
+클린 설치 기준 **4단계** 교육 자료입니다. **00(본 문서) → 01 → 02 → 03 → 04** 순서로만 진행합니다.
 
-**공장 출하 직후 또는 OS가 없는 깨끗한 상태**에서 Orange Pi 5 Max를 세팅하고, **OS 설치 → SSH 원격 접속 → DX-M1(NPU) 드라이버 설치/테스트 → USB UVC 카메라 테스트**까지 처음부터 구성한다.
+---
 
-| 단계 | 문서 | 핵심 결과 |
+## 1. 4단계 로드맵
+
+| 단계 | 문서 | 한 줄 요약 | 작업 위치 | 완료 기준 |
+|:---:|---|---|---|---|
+| **0** | **00_INDEX** (본 문서) | 전체 흐름·준비물·범위 | — | 아래 로드맵 이해 |
+| **1** | [01_OrangePi5Max_OS_설치.md](01_OrangePi5Max_OS_설치.md) | SD에 OS 굽기·부팅·CMA | **Windows PC** + Orange Pi(HDMI) | OS 부팅, `cma=256M` |
+| **2** | [02_SSH_연결_및_설정.md](02_SSH_연결_및_설정.md) | Windows SSH 준비 → Pi 원격 접속 | **Windows PC** + Orange Pi | 키로 `ssh`·VS Code 접속 |
+| **3** | [03_DX-M1_NPU_드라이버_설치_및_테스트.md](03_DX-M1_NPU_드라이버_설치_및_테스트.md) | M1 장착·dx-all-suite·NPU 데모 | Orange Pi (SSH 권장) | `dxrt-cli -s` M1 인식 |
+| **4** | [04_USB_UVC_카메라_테스트.md](04_USB_UVC_카메라_테스트.md) | USB 카메라 인식·1장 캡처 | Orange Pi (SSH 권장) | `test.jpg` 생성 |
+
+```text
+[00] 준비·로드맵 파악
+  |
+[01] OS ────────────── Windows Etcher / Pi HDMI
+  |
+[02] SSH ───────────── Windows 먼저(OpenSSH·키) → Pi IP·ssh
+  |
+[03] DX-M1 ─────────── 전원 OFF M.2 장착 → dx-all-suite
+  |
+[04] UVC 카메라 ────── USB 연결 → ffmpeg 캡처
+  |
+[완료] 00_INDEX §10 최종 점검
+```
+
+---
+
+## 2. 문서별 범위 (겹치지 않게)
+
+| 문서 | **이 문서에서만** 다룸 | **다른 문서로 미룸** |
 |---|---|---|
-| 1 | [01_OrangePi5Max_OS_설치.md](01_OrangePi5Max_OS_설치.md) | OS 이미지 굽기, 첫 부팅, Desktop 설정 마법사, 기본 패키지, CMA 적용 |
-| 2 | [02_SSH_연결_및_설정.md](02_SSH_연결_및_설정.md) | IP 확인, PowerShell·VS Code Remote-SSH, SSH 서버·키·SCP |
-| 3 | [03_DX-M1_NPU_드라이버_설치_및_테스트.md](03_DX-M1_NPU_드라이버_설치_및_테스트.md) | dx-all-suite 클론·설치, M1 인식, 첫 추론 데모 |
-| 4 | [04_USB_UVC_카메라_테스트.md](04_USB_UVC_카메라_테스트.md) | 테스트 도구 설치, UVC 인식, ffmpeg 캡처 |
+| **01** | 이미지 다운로드·Etcher·첫 부팅·Desktop 마법사·apt·CMA·diskpart | SSH, NPU, 카메라 앱 |
+| **02** | OpenSSH·키 생성·IP 확인·ssh 서버·authorized_keys·VS Code·SCP | OS 굽기, dx-all-suite |
+| **03** | M.2 장착·DKMS·headers·dx-all-suite·dxrt-cli·dx_app·(선택) dx_stream | UVC ffmpeg 상세, WebRTC |
+| **04** | UVC 인식·v4l2·ffmpeg 1프레임·CMA 재확인 | NPU 설치, nori_camera_server |
 
-## 2. 시작 전 상태 (전제)
+저장소의 `ssh_keys/`, `/home/camera`, 기존 `dx-all-suite` 경로는 **다른 장비 흔적**입니다. 이 교육에서는 **새로** 만듭니다.
 
-이 커리큘럼은 아래가 **없는** 상태에서 시작한다.
+---
 
-| 항목 | 시작 시 상태 |
+## 3. 시작 전 상태 (전제)
+
+| 항목 | 시작 시 |
 |---|---|
-| OS | microSD/eMMC에 **아무것도 기록되지 않음** (또는 공장 초기화) |
-| Linux 계정 | **없음** (01번에서 OS 설치 후 이미지 기본 계정만 존재) |
-| SSH | 서버 **미설치**, 키 **미등록** |
-| DX-M1 / DXRT | 드라이버·런타임 **미설치**, `dx-all-suite` **없음** |
-| 카메라 테스트 도구 | `v4l-utils`, `ffmpeg` **미설치** |
-| CMA | 기본값(약 8MB) — **256M 미적용** |
+| OS | microSD/eMMC **비어 있음** |
+| Linux 계정 | **없음** (01 이후 이미지 기본 계정만) |
+| SSH | 서버 **미설치**, Windows 키 **없음** |
+| DX-M1 / DXRT | **미설치**, `dx-all-suite` **없음** |
+| 카메라 도구 | `v4l-utils`, `ffmpeg` **미설치** |
+| CMA | 기본 ~8MB (**256M 미적용**) |
 
-저장소의 `ssh_keys/`, `/home/camera`, `/home/orangepi/dx-all-suite` 등은 **기존 작업 장비 흔적**이며, 이 교육 과정에서는 새로 만든다.
+---
 
-## 3. 교육 대상
+## 4. 교육 목표
 
-- Orange Pi 5 Max / RK3588 보드를 **처음부터** 세팅하는 개발자
-- DeepX M1 NPU와 USB 카메라를 **신규 환경**에 연동하려는 작업자
+**공장 출하·OS 없는 상태**에서 Orange Pi 5 Max를 세팅하고, **OS → SSH → DX-M1(NPU) → USB UVC 카메라**까지 처음부터 구성한다.
 
-## 4. 예상 소요 시간
+**대상:** Orange Pi 5 Max / RK3588을 처음 세팅하는 개발자, DeepX M1·UVC를 **신규 환경**에 붙이는 작업자.
 
-| 문서 | 예상 시간 | 비고 |
+---
+
+## 5. 예상 소요 시간
+
+| 문서 | 시간 | 비고 |
 |---|---|---|
-| 01 OS 설치 | 1~2시간 | 이미지 다운로드·굽기·첫 부팅 포함 |
-| 02 SSH 설정 | 45~90분 | IP 확인 + SSH 서버·Windows 키 |
-| 03 DX-M1 | 2~3시간 | dx-all-suite 클론·설치·재부팅·데모 포함 |
-| 04 UVC 카메라 | 10~30분 | 패키지 설치·캡처·트러블슈팅 |
-| **합계** | **약 4~6시간** | 네트워크·다운로드 속도에 따라 변동 |
+| 01 OS | 1~2시간 | 다운로드·굽기 포함 |
+| 02 SSH | 45~90분 | Windows 키 선행 |
+| 03 DX-M1 | 2~3시간 | clone·install·reboot |
+| 04 UVC | 10~30분 | 캡처·트러블슈팅 |
+| **합계** | **약 4~6시간** | 네트워크 속도에 따라 변동 |
 
-## 5. 사전 준비물
+---
 
-### 하드웨어
+## 6. 사전 준비물
 
-| 항목 | 설명 |
+### 6.1 하드웨어 (단계별)
+
+| 항목 | 필요 시점 | 설명 |
+|---|---|---|
+| Orange Pi 5 Max | 01~ | RK3588, 5V/4A 전원 |
+| microSD 32GB+ | 01 | **빈** 카드, USB 리더 |
+| HDMI·키보드·(마우스) | 01 | Desktop 마법사 / Server 콘솔 |
+| LAN 케이블 | 01~ | 유선 DHCP 권장 |
+| DeepX M1 M.2 | **03 시작 전** 장착 | 전원 OFF 후 삽입 |
+| USB UVC 카메라 | 04 | MJPEG 권장 |
+
+### 6.2 Windows PC 소프트웨어
+
+| 항목 | 시점 | 링크 |
+|---|---|---|
+| balenaEtcher | 01 | https://etcher.balena.io/ |
+| OpenSSH Client | 02 | Windows 10/11 기본 |
+| VS Code + Remote-SSH | 02 (선택) | https://code.visualstudio.com/ |
+
+### 6.3 공식 링크
+
+| 분류 | URL |
 |---|---|
-| Orange Pi 5 Max | RK3588, DeepX M1 M.2 슬롯 (03번 전 M.2 장착) |
-| DeepX M1 | M.2 NPU 모듈 — 03번 **시작 전** 장착 |
-| USB UVC 카메라 | MJPEG 지원 권장 (04번) |
-| microSD | 32GB 이상, **비어 있는** 카드 |
-| USB SD 카드 리더 | Windows PC |
-| HDMI 모니터 + USB 키보드·마우스 | Desktop: 6.2절 설정 마법사(언어·키보드·Wi-Fi·시간·사용자) / Server: 콘솔 |
-| LAN 케이블 | 유선 네트워크 권장 |
+| OS v2.4.0 | https://github.com/Joshua-Riek/ubuntu-rockchip/releases/tag/v2.4.0 |
+| Etcher | https://etcher.balena.io/ |
+| dx-all-suite | https://github.com/DEEPX-AI/dx-all-suite |
+| DX 환경 설정 | https://github.com/DEEPX-AI/dx-all-suite/blob/main/docs/source/02_Setting_Up_Environment.md |
+| DX 첫 추론 | https://github.com/DEEPX-AI/dx-all-suite/blob/main/docs/source/03_Running_Your_First_NPU_Model.md |
 
-### 소프트웨어 (Windows PC)
+---
 
-| 항목 | 용도 | 링크 |
-|---|---|---|
-| balenaEtcher | OS 이미지 굽기 | https://etcher.balena.io/ |
-| OpenSSH Client | IP SSH 접속, 키 생성, scp | Windows 10/11 기본 포함 |
-| VS Code + Remote-SSH | 원격 폴더·터미널 (**02번 11절**) | https://code.visualstudio.com/ |
-| Git (선택) | Windows에서 저장소 clone 시 | https://git-scm.com/ |
+## 7. 단계별 핵심 작업 (요약)
 
-## 5.1 공식 링크 및 소스
+### 01 — OS 설치
 
-| 분류 | 항목 | URL |
-|---|---|---|
-| OS | Ubuntu Rockchip v2.4.0 | https://github.com/Joshua-Riek/ubuntu-rockchip/releases/tag/v2.4.0 |
-| Tools | balenaEtcher | https://etcher.balena.io/ |
-| Driver / Source | DEEPX dx-all-suite | https://github.com/DEEPX-AI/dx-all-suite |
-| DX-AllSuite 설치 가이드 | Setting Up Environment | https://github.com/DEEPX-AI/dx-all-suite/blob/main/docs/source/02_Setting_Up_Environment.md |
-| DX-AllSuite 첫 추론 | Running Your First NPU Model | https://github.com/DEEPX-AI/dx-all-suite/blob/main/docs/source/03_Running_Your_First_NPU_Model.md |
+1. Ubuntu Rockchip 이미지 다운로드 → Etcher 굽기  
+2. 첫 부팅 (Desktop: 마법사 5단계)  
+3. `apt upgrade`, 기본 패키지, **`cma=256M`**, reboot  
 
-## 6. 완료 후 환경 기준
+→ 상세: [01](01_OrangePi5Max_OS_설치.md)
 
-01~04를 모두 마치면 아래 상태가 된다.
+### 02 — SSH
+
+1. **Windows:** OpenSSH Client → `ssh-keygen`  
+2. **Pi:** IP 확인 (`hostname -I`) → `openssh-server`  
+3. **Windows:** 공개키 등록 → 키 접속 → (선택) VS Code  
+
+→ 상세: [02](02_SSH_연결_및_설정.md)
+
+### 03 — DX-M1
+
+1. **전원 OFF** → M.2 장착  
+2. `dkms` + `linux-headers-$(uname -r)` (**rockchip**, generic 금지)  
+3. `git clone --recurse-submodules` → `./dx-runtime/install.sh` → **reboot**  
+4. `dxrt-cli -s`, `dx_app/run_demo.sh`  
+
+→ 상세: [03](03_DX-M1_NPU_드라이버_설치_및_테스트.md)
+
+### 04 — UVC 카메라
+
+1. CMA 256M 재확인  
+2. USB 연결 → `v4l2-ctl`  
+3. `ffmpeg` 1프레임 → `test.jpg`  
+
+→ 상세: [04](04_USB_UVC_카메라_테스트.md)
+
+---
+
+## 8. 완료 후 환경
 
 | 항목 | 값 |
 |---|---|
 | OS | Ubuntu Rockchip (aarch64) |
-| 작업 계정 | 이미지 기본 `ubuntu` 또는 01번에서 생성한 계정 |
-| 홈 경로 | `/home/ubuntu` (또는 생성한 계정 홈) |
-| dx-all-suite | `~/dx-all-suite` (클론·설치 완료) |
-| DXRT | `dxrt-cli -s`로 M1 인식 |
-| CMA | `cma=256M` 적용 |
-| SSH | PowerShell·VS Code Remote-SSH `<USER>@<IP>` 키 접속 |
+| 계정 | `ubuntu` 또는 01 마법사 계정 |
+| CMA | `cma=256M` |
+| SSH | `ssh -i ... <USER>@<IP>` |
+| NPU | `dxrt-cli -s` → Device 0: M1 |
+| 카메라 | `/dev/video0`, `test.jpg` |
 
-## 7. 학습 순서
+---
 
-```text
-[빈 SD 카드 + 전원 OFF M.2 슬롯]
-       |
-[01 OS 설치]
-  -> 이미지 굽기, 첫 부팅, apt, cma=256M, git 등 기본 도구
-       |
-[02 SSH]
-  -> IP 확인, ssh USER@IP, openssh-server, Windows 키, VS Code Remote-SSH
-       |
-[03 DX-M1]  (전원 OFF → M.2 장착 → 전원 ON)
-  -> dx-all-suite clone, install.sh, reboot, dxrt-cli, run_demo
-       |
-[04 UVC]  (USB 카메라 연결)
-  -> v4l-utils/ffmpeg 설치, v4l2-ctl, ffmpeg 1프레임 캡처
-```
+## 9. 심화·기존 문서
 
-각 단계는 **이전 단계를 처음부터 끝까지 완료한 뒤** 다음으로 진행한다.
-
-## 8. 산출물 형식
-
-| 형식 | 경로 | 용도 |
+| 구분 | 이 교육 (00~04) | 저장소 심화 문서 |
 |---|---|---|
-| Markdown (원본) | `교육자료/0X_*.md` | GitHub/Codex 작업 기준 |
+| 대상 | **클린 설치** | 운영·복구·WebRTC·IR-CUT |
+| dx_stream 실카메라 | 03 §12 (샘플 영상) | [RK3588 파이프라인](../RK3588_DeepX_M1_스마트카메라_데이터파이프라인.md) |
+| 인덱스 | 본 문서 | [docs/ORANGE_PI_WORKLOG_INDEX.md](../docs/ORANGE_PI_WORKLOG_INDEX.md) |
 
-## 9. 기존 작업 문서와의 관계
+---
 
-| 구분 | 이 교육자료 | 저장소 기존 문서 |
-|---|---|---|
-| 대상 | **신규 클린 설치** | 이미 구성된 장비 운영·복구·디버깅 |
-| 계정 | `ubuntu` 등 새 계정 | `camera`, `orangepi` 이전 |
-| DX-M1 | dx-all-suite **처음 설치** | dx_stream WebRTC, IR-CUT 등 **심화** |
+## 10. 최종 점검 체크리스트
 
-심화 주제는 [docs/ORANGE_PI_WORKLOG_INDEX.md](../docs/ORANGE_PI_WORKLOG_INDEX.md)를 참조한다.
+01~04를 마친 뒤 전부 확인한다.
+
+**01 OS**
+
+- [ ] OS 부팅·(Desktop) 마법사 완료  
+- [ ] `cma=256M` 적용 (`/proc/cmdline`, `CmaTotal`)
+
+**02 SSH**
+
+- [ ] Windows `ssh -V`, ed25519 키 생성  
+- [ ] Pi `openssh-server`, 키 접속 성공  
+
+**03 DX-M1**
+
+- [ ] M.2 장착, `dxrt-driver-dkms` rockchip 커널 `installed`  
+- [ ] `dxrt-cli -s` M1, `dx_app/run_demo.sh`  
+
+**04 UVC**
+
+- [ ] `v4l2-ctl --list-devices` 카메라 표시  
+- [ ] `ffmpeg`로 `test.jpg` 1장  
+
+---
+
+## 11. 산출물
+
+| 형식 | 경로 |
+|---|---|
+| Markdown | `교육자료/00_INDEX.md`, `01_*.md` … `04_*.md` |
