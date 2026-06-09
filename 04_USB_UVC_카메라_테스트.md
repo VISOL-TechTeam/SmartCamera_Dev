@@ -8,11 +8,11 @@
 | **선행** | [01](01_OrangePi5Max_OS_설치.md) **CMA 256M**, [02](02_SSH_연결_및_설정.md) (원격 시) |
 | **작업 위치** | Orange Pi (SSH 또는 HDMI) |
 | **완료 기준** | `/dev/video*` 인식, **`test.jpg`** 1장 캡처 |
-| **다음** | [00_INDEX.md](00_INDEX.md) §10 최종 점검 · (심화) §14 |
+| **다음** | [05_SmartCamera_App_설치_및_실행.md](05_SmartCamera_App_설치_및_실행.md) |
 
 | 이 문서에서 함 | 이 문서에서 하지 않음 |
 |---|---|
-| v4l2·ffmpeg **단독** 카메라 검증, CMA 재확인 | NPU 설치, nori_camera_server, dx_stream 실카메라 |
+| v4l2·ffmpeg **단독** 카메라 검증, CMA 재확인 | NPU 설치, SmartCamera App (→ **05**) |
 
 ### 작업 흐름
 
@@ -221,16 +221,16 @@ journalctl -b -p warning..alert --no-pager | tail -50
 
 ---
 
-## 14. 다음 단계 (심화 · 커리큘럼 이후)
+## 14. 다음 단계
 
 카메라 단독 테스트 통과 후:
 
 | 주제 | 문서 |
 |---|---|
+| SmartCamera App (설치·실행) | [05_SmartCamera_App_설치_및_실행.md](05_SmartCamera_App_설치_및_실행.md) |
 | dx_stream (샘플 영상) | [03 §12](03_DX-M1_NPU_드라이버_설치_및_테스트.md) |
-| nori_camera_server | [nori_camera_server_setup_guide.md](../nori_camera_server_setup_guide.md) |
 | 전체 파이프라인 | [RK3588_DeepX_M1_스마트카메라_데이터파이프라인.md](../RK3588_DeepX_M1_스마트카메라_데이터파이프라인.md) |
 
-## 15. 교육 커리큘럼 완료
+## 15. 교육 커리큘럼 (04 완료)
 
-→ [00_INDEX.md](00_INDEX.md) **§10 최종 점검** 체크리스트로 전체 확인.
+→ [05_SmartCamera_App_설치_및_실행.md](05_SmartCamera_App_설치_및_실행.md) 계속.
