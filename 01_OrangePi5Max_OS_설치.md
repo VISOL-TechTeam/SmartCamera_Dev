@@ -86,7 +86,7 @@ Desktop / Server 중 하나를 선택한다. Server는 콘솔·headless에 적�
 
 ## 6. 첫 부팅
 
-1. microSD 삽입
+1. emmc 장착 or microSD 삽입
 2. HDMI, 키보드, **LAN** 연결
 3. 전원 ON → 1~3분 대기
 
