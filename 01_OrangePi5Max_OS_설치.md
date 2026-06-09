@@ -69,6 +69,14 @@ Desktop / Server 중 하나를 선택한다. Server는 콘솔·headless에 적�
 3. **Select target** → microSD (용량·장치명 확인 — PC 디스크 선택 금지)
 4. **Flash!** → 완료 후 SD 분리
 
+**Flash 전** — 이미지 파일·대상 SD 확인:
+
+![balenaEtcher: 이미지·대상 SD 선택 후 Flash!](image/balenaEtcher_0.png)
+
+**Flash 완료** — `Flash Completed!` 확인 후 SD 분리:
+
+![balenaEtcher: Flash Completed](image/balenaEtcher_1.png)
+
 ### 5.2 주의
 
 - 굽기는 SD **전체를 덮어쓴다**. 기존 데이터는 복구 불가.
@@ -284,6 +292,10 @@ clean
 ```cmd
 create partition primary
 ```
+
+`list disk` → `select disk` → `clean` → `create partition primary`까지의 화면 예:
+
+![diskpart: SD 디스크 선택·clean·primary 파티션 생성](image/cmd_diskpart_0.png)
 
 7. exFAT 빠른 포맷 (Windows·Mac 호환, 탐색기 표시용):
 

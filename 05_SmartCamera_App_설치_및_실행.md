@@ -161,7 +161,13 @@ cd ~/SmartCamera_App
 [INFO] C++ 빌드: make -C cpp ai_backend camera_server
 [INFO] 웹 UI: http://<Pi-IP>:8001/
 [INFO] camera_server 시작 (0.0.0.0:8001)
+smartcamera C++ AI backend listening on 127.0.0.1:8000 (DXRT yolo26n + frame.jpg/mjpeg)
+camera_server listening on port 8001...
 ```
+
+실행 화면 예:
+
+![start.sh: AI 백엔드(8000)·camera_server(8001) 기동](image/smart_camera_app.png)
 
 **dx_app을 다른 경로에 둔 경우:**
 

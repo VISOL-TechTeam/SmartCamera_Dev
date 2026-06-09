@@ -336,6 +336,10 @@ Host orangepi5max
 4. 새 VS Code 창이 열리며 연결 (키 등록 완료 시 비밀번호 없음)
 5. **Open Folder** → `/home/ubuntu` (또는 `<USER>` 홈) 선택
 
+원격 연결 후 **Open Folder**로 Pi 홈 디렉터리를 여는 화면 예 (VS Code / Cursor 동일):
+
+![Remote-SSH: 폴더 열기 — SSH: orangepi5max](image/vscode_ssh.png)
+
 **방법 B — 왼쪽 하단**
 
 1. VS Code 왼쪽 하단 **><** (Remote) 아이콘 클릭
