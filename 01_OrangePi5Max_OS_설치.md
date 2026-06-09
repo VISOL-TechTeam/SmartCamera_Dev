@@ -54,7 +54,7 @@ Orange Pi 5 Max / RK3588용 이미지:
 | 항목 | 내용 |
 |---|---|
 | **릴리스** | [Ubuntu Rockchip v2.4.0](https://github.com/Joshua-Riek/ubuntu-rockchip/releases/tag/v2.4.0) |
-| 저장소 | [Download]https://joshua-riek.github.io/ubuntu-rockchip-download/ |
+| 저장소 | [Download](https://joshua-riek.github.io/ubuntu-rockchip-download/) |
 |권장 버전| ubuntu 24.04|
 |권장 옵션| Desktop-arm64|
 | 보드 | 릴리스 페이지에서 **Orange Pi 5 Max** 항목 선택 |
