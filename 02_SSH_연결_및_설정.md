@@ -20,8 +20,6 @@
 | **Ubuntu Server** | 보통 **openssh-server 포함·기동** | PowerShell에서 IP로 바로 `ssh` 가능 |
 | **Ubuntu Desktop** | 기본 **미설치**일 수 있음 | HDMI로 1회 로그인 → SSH 설치 → IP 접속 |
 
-저장소 `ssh_keys/`는 **다른 PC용 예시**이며, 이 교육에서는 Windows에서 **새 키를 생성**한다.
-
 ## 3. 사전 조건
 
 - [01_OrangePi5Max_OS_설치.md](01_OrangePi5Max_OS_설치.md) 완료 (Orange Pi 부팅·LAN 연결)
@@ -347,7 +345,6 @@ ping orangepi5max.local
 ssh -i "$env:USERPROFILE\.ssh\id_ed25519_orangepi" <USER>@orangepi5max.local
 ```
 
-자세한 설정: [OrangePI5MAX_네트워크_ID_설정법.md](../OrangePI5MAX_네트워크_ID_설정법.md)
 
 ## 14. 파일 전송 (SCP)
 

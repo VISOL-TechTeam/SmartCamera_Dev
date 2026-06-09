@@ -180,7 +180,7 @@ journalctl -b -p warning..alert --no-pager | tail -50
 
 | 주제 | 문서 |
 |---|---|
-| dx_stream + 카메라 | `~/dx-all-suite/dx-runtime/dx_stream` |
+| dx_stream + 카메라 | `~/dx-all-suite/dx-runtime/dx_stream` — `./install.sh` → `./setup.sh` → `./run_demo.sh` |
 | nori_camera_server | [nori_camera_server_setup_guide.md](../nori_camera_server_setup_guide.md) |
 | 전체 파이프라인 설계 | [RK3588_DeepX_M1_스마트카메라_데이터파이프라인.md](../RK3588_DeepX_M1_스마트카메라_데이터파이프라인.md) |
 
