@@ -6,7 +6,7 @@
 
 | 단계 | 문서 | 핵심 결과 |
 |---|---|---|
-| 1 | [01_OrangePi5Max_OS_설치.md](01_OrangePi5Max_OS_설치.md) | OS 이미지 굽기, 첫 부팅, 기본 패키지, CMA 적용 |
+| 1 | [01_OrangePi5Max_OS_설치.md](01_OrangePi5Max_OS_설치.md) | OS 이미지 굽기, 첫 부팅, Desktop 설정 마법사, 기본 패키지, CMA 적용 |
 | 2 | [02_SSH_연결_및_설정.md](02_SSH_연결_및_설정.md) | IP 확인, PowerShell·VS Code Remote-SSH, SSH 서버·키·SCP |
 | 3 | [03_DX-M1_NPU_드라이버_설치_및_테스트.md](03_DX-M1_NPU_드라이버_설치_및_테스트.md) | dx-all-suite 클론·설치, M1 인식, 첫 추론 데모 |
 | 4 | [04_USB_UVC_카메라_테스트.md](04_USB_UVC_카메라_테스트.md) | 테스트 도구 설치, UVC 인식, ffmpeg 캡처 |
@@ -52,7 +52,7 @@
 | USB UVC 카메라 | MJPEG 지원 권장 (04번) |
 | microSD | 32GB 이상, **비어 있는** 카드 |
 | USB SD 카드 리더 | Windows PC |
-| HDMI 모니터 + USB 키보드 | Desktop 이미지 첫 설정 또는 Server 콘솔 |
+| HDMI 모니터 + USB 키보드·마우스 | Desktop: 6.2절 설정 마법사(언어·키보드·Wi-Fi·시간·사용자) / Server: 콘솔 |
 | LAN 케이블 | 유선 네트워크 권장 |
 
 ### 소프트웨어 (Windows PC)

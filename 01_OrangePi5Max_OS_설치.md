@@ -33,7 +33,7 @@ Orange Pi 5 Max / RK3588용 이미지:
 | 보드 | 릴리스 페이지에서 **Orange Pi 5 Max** 항목 선택 |
 | 형식 | `.img.xz` (압축) 또는 `.img` |
 
-Desktop / Server 중 하나를 선택한다. Server는 SSH·headless에 적합하고, Desktop은 HDMI 마법사로 초기 설정한다.
+Desktop / Server 중 하나를 선택한다. Server는 콘솔·headless에 적합하고, Desktop은 HDMI 마법사로 초기 설정한다.
 
 ## 5. 이미지 굽기 (Windows PC)
 
@@ -62,11 +62,35 @@ Desktop / Server 중 하나를 선택한다. Server는 SSH·headless에 적합�
 | 사용자 | `ubuntu` |
 | 비밀번호 | `ubuntu` (첫 로그인 후 변경 권장) |
 
-HDMI·시리얼 또는 이후 SSH(02번)로 로그인한다.
+HDMI·시리얼로 로그인한다.
 
-### 6.2 Ubuntu Desktop
+### 6.2 Ubuntu Desktop — 첫 부팅 설정 마법사
 
-HDMI에서 **설정 마법사**를 따라 사용자·비밀번호·Wi-Fi 등을 **새로 생성**한다. 마법사가 끝난 뒤 터미널을 연다.
+HDMI 모니터·USB 키보드·마우스를 연결한 뒤 전원을 켜면 **설정 마법사(Welcome / OOBE)** 가 순서대로 나온다. 아래 순서대로 진행한다.
+
+| 순서 | 화면 | 입력·선택 | 교육용 권장 |
+|---|---|---|---|
+| **1** | **언어 선택** | 표시·입력 언어 | **한국어** (또는 English) |
+| **2** | **키보드 레이아웃** | 키보드 종류·레이아웃 | **Korean** / **English (US)** |
+| **3** | **Wi-Fi 연결** | 무선 네트워크 선택·비밀번호 | 사용할 Wi-Fi 선택 (유선 LAN만 쓸 경우 **건너뛰기** 가능) |
+| **4** | **시스템 위치(시간)** | 지역·시간대 | **Seoul** / **Asia/Seoul** (한국 시간) |
+| **5** | **사용자 정보** | 아래 항목 입력 | 마법사에서 설정한 계정·비밀번호 기억 |
+
+#### 5단계 — 사용자 정보 항목
+
+| 항목 | 설명 | 교육용 예시 |
+|---|---|---|
+| **이름(Your name)** | 화면에 표시되는 이름 | `Orange Pi User` |
+| **컴퓨터 이름(Computer name)** | 네트워크·호스트 이름 | `orangepi5max` |
+| **사용자 이름(Username)** | 로그인·sudo 계정 | `ubuntu` 또는 `devuser` |
+| **패스워드(Password)** | 로그인·sudo 비밀번호 | **기억할 수 있는 값** |
+| **자동 로그인(Automatic login)** | 부팅 시 비밀번호 없이 로그인 | 교육·개발: **켜기** / 보안: **끄기** |
+
+마법사 완료 후 데스크톱이 나오면 **터미널**을 연다 **7절**로 진행한다.
+
+**참고**
+
+- 7.2 시간대·7.4 호스트 이름은 마법사(4·5단계)에서 이미 설정했으면 **중복 실행 생략** 가능.
 
 ## 7. 최초 시스템 설정
 
@@ -80,6 +104,8 @@ sudo apt upgrade -y
 ```
 
 ### 7.2 시간대
+
+마법사 4단계(시스템 위치)에서 **Seoul**을 선택했다면 생략 가능.
 
 ```bash
 sudo timedatectl set-timezone Asia/Seoul
@@ -99,37 +125,12 @@ sudo apt install -y git curl wget build-essential pkg-config \
 
 ### 7.4 호스트 이름 (선택)
 
+마법사 5단계 **컴퓨터 이름**을 `orangepi5max` 등으로 설정했다면 생략 가능.
+
 ```bash
 sudo hostnamectl set-hostname orangepi5max
 hostname
 ```
-
-mDNS(`*.local`)는 02번 SSH 문서에서 설정한다.
-
-### 7.5 IP 확인 (02번 SSH 접속용)
-
-Orange Pi가 LAN에서 IP를 받았는지 확인한다. 이 주소로 Windows PowerShell에서 `ssh <USER>@<IP>` 접속한다.
-
-```bash
-hostname -I
-ip -4 addr show
-```
-
-| 항목 | 예시 |
-|---|---|
-| `<ORANGE_PI_IP>` | `192.168.0.42` |
-| `<USER>` | Server: `ubuntu` / Desktop: 마법사에서 생성한 이름 |
-
-**메모해 둔다.** HDMI 없이 작업하려면 02번에서 이 IP로 접속한다.
-
-IP를 모를 때는 02번 4절(공유기 DHCP)을 참조한다.
-
-### 7.6 Ubuntu Server vs Desktop
-
-| 이미지 | SSH | 권장 |
-|---|---|---|
-| **Server** | `openssh-server` **포함** 가능 | HDMI 없이 PowerShell IP 접속 바로 시도 |
-| **Desktop** | SSH **미포함** 가능 | HDMI 1회 → SSH 설치 → IP 접속 |
 
 ## 8. CMA 부팅 파라미터 (cma=256M)
 
@@ -204,15 +205,111 @@ sudo usermod -aG sudo,video,plugdev,render devuser
 | 화면 없음 | HDMI·케이블 교체, 2~3분 추가 대기 |
 | IP 없음 | LAN 연결, `ip link`, 공유기 DHCP 목록 확인 |
 | CMA 미적용 | 부팅 설정 파일 경로 재확인, `sudo reboot` |
+| **eMMC→SD / SD PC 미인식** | **10.1절 diskpart** 후 Etcher 재굽기 |
 
-백업 등 **기존 장비 복구**는  [OrangePI_전체시스템_백업_복구_방법.md](../OrangePI_전체시스템_백업_복구_방법.md) 참조.
+백업 등 **기존 장비 복구**는 [OrangePI_전체시스템_백업_복구_방법.md](../OrangePI_전체시스템_백업_복구_방법.md) 참조.
+
+### 10.1 eMMC → SD / SD 카드 PC·Etcher 미인식 (diskpart)
+
+**eMMC 내용을 SD로 옮겼거나**, SD를 Orange Pi에서 쓰다 PC에 다시 꽂았을 때 **탐색기·Etcher에 안 보이거나** 이상한 파티션만 보일 때 Windows **diskpart**로 SD를 초기화한다.
+
+**주의**
+
+- SD **전체 데이터가 삭제**된다.
+- `select disk` 번호를 잘못 고르면 **Windows(C:) 디스크**를 지울 수 있다. **용량(MB/GB)** 으로 SD만 고른다.
+- diskpart 후 **5절 balenaEtcher**로 OS `.img`를 **다시 굽는다** (exFAT 포맷만으로는 부팅 OS가 되지 않음).
+
+#### 절차
+
+1. Windows 검색 → **cmd** → **관리자 권한**으로 명령 프롬프트 실행
+
+2. diskpart 실행:
+
+```cmd
+diskpart
+```
+
+3. 연결된 디스크 목록 확인 (**용량**으로 SD 번호 확인):
+
+```cmd
+list disk
+```
+
+예시:
+
+```text
+  디스크 0    ...  500 GB   (PC 내장 SSD — 선택 금지)
+  디스크 1    ...   64 GB   (microSD — 이 번호 선택)
+```
+
+4. SD 디스크 선택 (번호는 본인 환경에 맞게 변경):
+
+```cmd
+select disk 1
+```
+
+5. 파티션·데이터 삭제:
+
+```cmd
+clean
+```
+
+6. 주 파티션 생성:
+
+```cmd
+create partition primary
+```
+
+7. exFAT 빠른 포맷 (Windows·Mac 호환, 탐색기 표시용):
+
+```cmd
+format fs=exfat quick
+```
+
+8. 드라이브 문자 할당:
+
+```cmd
+assign
+```
+
+9. diskpart 종료:
+
+```cmd
+exit
+```
+
+10. 탐색기에서 SD가 보이는지 확인 → **5절 balenaEtcher**로 Ubuntu Rockchip `.img` / `.img.xz` **재굽기**
+
+#### diskpart 한 번에 (참고)
+
+`select disk` 번호만 본인 SD에 맞게 바꾼 뒤 순서대로 실행:
+
+```cmd
+diskpart
+list disk
+select disk 1
+clean
+create partition primary
+format fs=exfat quick
+assign
+exit
+```
+
+#### 여전히 인식 안 될 때
+
+| 확인 | 조치 |
+|---|---|
+| USB 리더·SD 접점 | 다른 리더·포트, SD 재삽입 |
+| SD 불량 | 다른 SD 카드로 테스트 |
+| Etcher 대상 | **Select target**에서 용량·장치명 재확인 |
+| Orange Pi 부팅 | SD 삽입 깊이, 전원 OFF 후 재삽입 |
 
 ## 11. 완료 확인
 
 - [ ] 빈 SD에 OS 굽기·첫 부팅
+- [ ] (Desktop) 6.2절 설정 마법사 1~5단계 완료
 - [ ] `sudo apt update && sudo apt upgrade` 완료
 - [ ] `git`, `build-essential` 설치
-- [ ] `hostname -I`로 IP 확인
 - [ ] `/proc/cmdline`에 `cma=256M`, `CmaTotal` 약 256MB
 
 ## 12. 관련 링크
@@ -224,6 +321,4 @@ sudo usermod -aG sudo,video,plugdev,render devuser
 
 ## 13. 다음 단계
 
-→ [02_SSH_연결_및_설정.md](02_SSH_연결_및_설정.md): SSH 서버 설치 및 Windows 원격 접속
-
-**[전원버튼 60초 타이머 끄기] gsettings set org.gnome.SessionManager logout-prompt false
+→ [02_SSH_연결_및_설정.md](02_SSH_연결_및_설정.md)
