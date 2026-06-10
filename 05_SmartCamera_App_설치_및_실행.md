@@ -300,10 +300,3 @@ curl -s --max-time 15 -X POST http://127.0.0.1:8000/api/ai/pipeline/stop \
 
 → [00_INDEX.md](00_INDEX.md) **§10 최종 점검** 체크리스트로 01~05 전체 확인.
 
-**심화 문서**
-
-| 주제 | 문서 |
-|---|---|
-| SmartCamera 운영·환경 변수 | [SmartCamera_App OPERATIONS.md](https://github.com/VISOL-TechTeam/SmartCamera_App/blob/main/OPERATIONS.md) |
-| UVC/NPU 안전 수칙 | [SmartCamera_App AGENTS.md](https://github.com/VISOL-TechTeam/SmartCamera_App/blob/main/AGENTS.md) |
-| 전체 파이프라인 | [RK3588_DeepX_M1_스마트카메라_데이터파이프라인.md](../RK3588_DeepX_M1_스마트카메라_데이터파이프라인.md) |
